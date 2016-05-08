@@ -117,6 +117,8 @@ cdef SDL_Window *gWindow
 cdef SDL_GLContext gContext;
 
 cdef int init():
+    global gWindow
+    global gContext
     if SDL_Init(SDL_INIT_VIDEO) < 0:
         printf("SDL could not initialize: '%s'\n", SDL_GetError())
         return -1
@@ -185,6 +187,7 @@ cdef void render():
 
 
 cpdef main():
+    global gWindow
     cdef int quit = 0;
     cdef SDL_Event event;
     cdef Uint32 start;
@@ -192,7 +195,9 @@ cpdef main():
     cdef int frames = 0;
     cdef double fps;
 
-    init()
+    if init() < 0:
+        printf("Could not initialized!")
+        return -1
     start = SDL_GetTicks()
     while not quit:
         while SDL_PollEvent(&event):
