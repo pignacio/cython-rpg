@@ -142,8 +142,8 @@ cdef int init():
         printf("OpenGL context could not be created! SDL Error: '%s'\n", SDL_GetError())
         return -3
 
-    if SDL_GL_SetSwapInterval(1) < 0:
-        printf("Warning: Unable to set VSync! SDL Error: '%s'\n", SDL_GetError())
+    # if SDL_GL_SetSwapInterval(1) < 0:
+    #     printf("Warning: Unable to set VSync! SDL Error: '%s'\n", SDL_GetError())
 
     if initGL() < 0:
         printf("Unable to init OpenGL!\n")
