@@ -1,4 +1,5 @@
 from SDL2 cimport (
+    SDL_BlendMode,
     SDL_ConvertSurface,
     SDL_CreateTextureFromSurface,
     SDL_CreateRenderer,
@@ -17,6 +18,7 @@ from SDL2 cimport (
     SDL_RenderClear,
     SDL_RenderCopy,
     SDL_RenderPresent,
+    SDL_SetTextureBlendMode,
     SDL_SetRenderDrawColor,
     SDL_Surface,
     SDL_Window,
@@ -30,7 +32,7 @@ from SDL2_image cimport (
     IMG_Load,
     IMG_Quit,
 )
-from logutils cimport log_info, log_sdl_err
+from logutils cimport log_info, log_sdl_err, log_sdl_warn
 from libc.stdio cimport printf
 
 
@@ -179,6 +181,12 @@ cdef class Texture:
 
     def __nonzero__(self):
         return self.ptr != NULL
+
+    cdef int set_blend_mode(self, SDL_BlendMode mode):
+        res = SDL_SetTextureBlendMode(self.ptr, mode)
+        if res < 0:
+            log_sdl_warn("Could not set blend mode for Texture[%p]", self.ptr)
+        return res
 
 
 cdef Texture Texture_wrap(SDL_Texture* ptr, int width, int height):

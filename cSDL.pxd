@@ -1,4 +1,5 @@
 from SDL2 cimport (
+    SDL_BlendMode,
     SDL_PixelFormat,
     SDL_Rect,
     SDL_Renderer,
@@ -46,4 +47,6 @@ cdef class Texture:
     cdef SDL_Texture* ptr
     cdef int width
     cdef int height
+
+    cdef int set_blend_mode(self, SDL_BlendMode mode)
 cdef Texture Texture_wrap(SDL_Texture* ptr, int width, int height)
