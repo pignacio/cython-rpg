@@ -1,7 +1,7 @@
 # Cython PXD file for SDL2_image 2.0.0
-from sdl2.SDL2 cimport *
+from SDL2 cimport *
 
-cdef extern from "SDL_image.h" nogil:
+cdef extern from "SDL2/SDL_image.h" nogil:
 
     ctypedef enum IMG_InitFlags:
         IMG_INIT_JPG

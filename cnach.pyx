@@ -1,4 +1,7 @@
 from SDL2 cimport (
+    SDLK_ESCAPE,
+    SDLK_q,
+    SDL_BlitSurface,
     SDL_CreateWindow,
     SDL_Delay,
     SDL_DestroyWindow,
@@ -17,10 +20,14 @@ from SDL2 cimport (
     SDL_INIT_EVERYTHING,
     SDL_INIT_VIDEO,
     SDL_Init,
+    SDL_KEYDOWN,
     SDL_MapRGB,
     SDL_PollEvent,
     SDL_QUIT,
     SDL_Quit,
+    SDL_Rect,
+    SDL_RENDERER_ACCELERATED,
+    SDL_RENDERER_PRESENTVSYNC,
     SDL_Surface,
     SDL_UpdateWindowSurface,
     SDL_WINDOWPOS_UNDEFINED,
@@ -29,60 +36,65 @@ from SDL2 cimport (
     SDL_Window,
     Uint32,
 )
+from cSDL cimport (
+    SDL,
+    Window,
+    Surface,
+    Window_create,
+    Renderer_create,
+    Surface_load,
+)
+from logutils cimport log_info
 from libc.stdio cimport printf
-
-cdef class Window:
-    cdef SDL_Window* ptr
-
-    def __dealloc__(self):
-        printf("Freeing Window[%p]\n", self.ptr)
-        if self.ptr:
-            SDL_DestroyWindow(self.ptr)
-        self.ptr = <SDL_Window*>NULL
-
-
-cdef Window create_window(SDL_Window* ptr):
-    printf("Creating Window[%p]\n", ptr)
-    window = Window()
-    window.ptr = ptr
-    return window
 
 cdef inline int abs(int x):
     return x if x >=0 else -x
 
 cpdef main():
-    cdef SDL_Window *cWindow = NULL;
-    cdef SDL_Surface *screen = NULL;
-    cdef int quit = 0;
-    cdef int r=0, g=0, b=0;
-    cdef SDL_Event event;
-    cdef Uint32 start;
-    cdef Uint32 elapsed;
-    cdef int frames = 0;
-    cdef double fps;
-    cdef Window window;
-    if SDL_Init(SDL_INIT_EVERYTHING) < 0:
-        printf("Error initing! '%s'\n", SDL_GetError())
-    else:
-        cWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN)
-        if not cWindow:
-            printf("Problems creating window: '%s'\n", SDL_GetError())
-        else:
-            window = create_window(cWindow)
-            screen = SDL_GetWindowSurface(window.ptr)
-            start = SDL_GetTicks()
-            while not quit:
-                while SDL_PollEvent(&event):
-                    if event.type == SDL_QUIT:
-                        quit = 1
-                r = (r + 1) % 511
-                g = (g + 3) % 511
-                b = (b + 5) % 511
+    cdef SDL_Event event
+    cdef Uint32 start
+    cdef Uint32 elapsed
+    cdef double fps
+    cdef int frames = 0
+    cdef SDL_Rect srcrect, dstrect;
 
-                SDL_FillRect(screen, NULL, SDL_MapRGB(screen.format, abs(r - 255), abs(g - 255), abs(b - 255)))
-                SDL_UpdateWindowSurface(window.ptr)
-                frames += 1
-            elapsed = SDL_GetTicks() - start
-            fps = <double>frames / <double> elapsed * 1000.
-            printf("%d frames in %d ms. %.2f FPS\n", frames, elapsed, fps);
-        SDL_Quit()
+    sdl = SDL()
+
+    window = Window_create(
+        "SDL Tutorial",
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        800,
+        600,
+        SDL_WINDOW_SHOWN)
+    renderer = Renderer_create(window.ptr, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
+    renderer.set_draw_color(255, 255, 255, 255)
+    start = SDL_GetTicks()
+    image = Surface_load('character.png')
+    texture = renderer.texture_from_surface(image)
+
+    srcrect.x = dstrect.x = 0
+    srcrect.y = dstrect.y = 0
+    srcrect.w = dstrect.w = 32
+    srcrect.h = dstrect.h = 32
+
+    quit = False
+    while not quit:
+        while SDL_PollEvent(&event):
+            if event.type == SDL_QUIT:
+                quit = True
+            elif event.type == SDL_KEYDOWN:
+                key = event.key.keysym.sym
+                if key == SDLK_q or key == SDLK_ESCAPE:
+                    quit = True
+        renderer.clear()
+        srcrect.x = dstrect.x = (frames) % (texture.width - 32)
+        srcrect.y = dstrect.y = (frames * 2) % (texture.height - 32)
+        renderer.copy(texture, &srcrect, &dstrect)
+        renderer.present()
+        # SDL_BlitSurface(image.ptr, NULL, window.surface, NULL)
+        # SDL_UpdateWindowSurface(window.ptr)
+        frames += 1
+    elapsed = SDL_GetTicks() - start
+    fps = <double>frames / <double> elapsed * 1000.
+    log_info("%d frames in %d ms. %.2f FPS", frames, elapsed, fps);

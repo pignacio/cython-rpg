@@ -9,6 +9,6 @@ import os
 
 os.environ['CC'] = 'clang-3.5'
 
-setup(ext_modules=cythonize(Extension('cnach',
-                                      ["cnach.pyx"],
-                                      libraries=['SDL2', 'GL', 'GLU', 'glut'])))
+CYTHON_EXTENSIONS = Extension('*', ["*.pyx"], libraries=['SDL2', 'SDL2_image'])
+
+setup(ext_modules=cythonize(CYTHON_EXTENSIONS))
