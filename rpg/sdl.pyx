@@ -1,4 +1,6 @@
-from SDL2 cimport (
+from libc.stdio cimport printf
+
+from .SDL2 cimport (
     SDL_BlendMode,
     SDL_ConvertSurface,
     SDL_CreateTextureFromSurface,
@@ -25,15 +27,14 @@ from SDL2 cimport (
     Uint32,
     Uint8,
 )
-from SDL2_image cimport (
+from .SDL2_image cimport (
     IMG_INIT_JPG,
     IMG_INIT_PNG,
     IMG_Init,
     IMG_Load,
     IMG_Quit,
 )
-from logutils cimport log_info, log_sdl_err, log_sdl_warn
-from libc.stdio cimport printf
+from .logutils cimport log_info, log_sdl_err, log_sdl_warn
 
 
 cdef class SDL:
