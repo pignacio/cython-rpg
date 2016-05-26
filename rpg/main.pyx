@@ -46,44 +46,9 @@ from .sdl cimport (
     Window,
     Window_create,
 )
+from rpg.gfx.blitter cimport Blitter, TextureRect
 from .logutils cimport log_info
 from libc.stdio cimport printf
-
-
-cdef inline int abs(int x):
-    return x if x >=0 else -x
-
-
-cdef struct TextureRect:
-    SDL_Texture* texture
-    SDL_Rect rect
-
-
-# cdef TextureRect TextureRect_full(SDL_Texture* texture):
-#     return TextureRect(texture, True, SDL_Rect(0,0,0,0))
-#
-#
-# cdef TextureRect TextureRect_partial(SDL_Texture* texture, SDL_Rect rect):
-#     return TextureRect(texture, False, rect)
-
-
-cdef class Blitter:
-    cdef Renderer renderer
-
-    cdef inline void blit_rect_to(self, TextureRect rect, int x, int y):
-        cdef SDL_Rect dest = SDL_Rect(
-            x,
-            y,
-            rect.rect.w,
-            rect.rect.h,
-        )
-        self.blit_rect_to_rect(rect, &dest)
-
-    cdef inline void blit_rect_to_rect(self, TextureRect rect, const SDL_Rect* dest):
-        self.blit_full(rect.texture, &rect.rect, dest)
-
-    cdef inline void blit_full(self, SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dst):
-        self.renderer.copy_ptr(texture, src, dst)
 
 
 cpdef main():
@@ -92,7 +57,7 @@ cpdef main():
     cdef Uint32 elapsed
     cdef double fps
     cdef int frames = 0
-    cdef SDL_Rect srcrect, dstrect;
+    cdef SDL_Rect srcrect, dstrect
 
     sdl = SDL()
 

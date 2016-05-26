@@ -10,8 +10,7 @@ import os
 os.environ['CC'] = 'clang-3.5'
 
 CYTHON_EXTENSIONS = (
-    Extension('rpg.sdl', ["rpg/sdl.pyx"], libraries=['SDL2', 'SDL2_image']),
-    Extension('rpg.cnach', ["rpg/cnach.pyx"], libraries=['SDL2', 'SDL2_image']),
+    Extension('*', ["rpg/**/*.pyx"], libraries=['SDL2', 'SDL2_image']),
 )
 
 setup(ext_modules=cythonize(CYTHON_EXTENSIONS))
