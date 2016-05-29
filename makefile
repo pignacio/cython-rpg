@@ -16,6 +16,7 @@ run: build_ext
 
 html:
 	find rpg -name "*.pyx" -exec cython -a {} +
+	find rpg -name "*.pyx" | python scripts/make_html_tree.py > tree.html
 
 # vim:ft=make
 #
