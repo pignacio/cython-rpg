@@ -3,10 +3,11 @@
 # ignacio, 2016-05-25 17:30
 #
 
-clean:
-	find rpg -name "*.so" -delete
+clean: clean-so
 	find rpg -name "*.c" -delete
-	find rpg -name "*.html" -delete
+
+clean-so:
+	find rpg -name "*.so" -delete
 
 build_ext:
 	python setup.py build_ext --inplace
