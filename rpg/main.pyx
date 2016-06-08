@@ -80,7 +80,7 @@ cpdef run():
         800,
         600,
         SDL_WINDOW_SHOWN)
-    renderer = Renderer_create(window.ptr, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
+    renderer = Renderer_create(window.ptr, SDL_RENDERER_ACCELERATED)
     blitter = BasicBlitter(renderer)
     start = last_tick = SDL_GetTicks()
     image = Surface_load('character.png')
