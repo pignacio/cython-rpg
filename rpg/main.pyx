@@ -47,11 +47,18 @@ from .sdl cimport (
     Window_create,
 )
 from rpg.gfx.blitter cimport BasicBlitter, TextureRect
+from rpg.image.sprite_sheet cimport SpriteSheet
+from rpg.map.map cimport Map, Tileset
 from .logutils cimport log_info
 from libc.stdio cimport printf
 
+def main():
+    # run()
+    # return
+    import cProfile
+    cProfile.runctx("run()", globals(), locals(), sort='cumulative')
 
-cpdef main():
+cpdef run():
     cdef SDL_Event event
     cdef Uint32 start
     cdef Uint32 elapsed
@@ -73,6 +80,14 @@ cpdef main():
     blitter = BasicBlitter(renderer)
     image = Surface_load('character.png')
     texture = renderer.texture_from_surface(image)
+    sheet = SpriteSheet(texture, 32, 48)
+    log_info("Sheet is %d x %d", sheet._width(), sheet._height())
+
+    map_texture = renderer.texture_from_surface(Surface_load('tileset3.png'))
+    tilesize = 32
+    map_data = [[[x + y, 10 + x + y] for y in xrange(10)] for x in xrange(10)]
+    tileset = Tileset(map_texture, tilesize)
+    map = Map(tileset, 10, 10, 800, 600, map_data)
 
     srcrect.x = dstrect.x = 0
     srcrect.y = dstrect.y = 0
@@ -92,7 +107,12 @@ cpdef main():
         renderer.clear()
         srcrect.x = dstrect.x = (frames) % (texture.width - 32)
         srcrect.y = dstrect.y = (frames * 2) % (texture.height - 32)
-        blitter.blit_rect_to(TextureRect(texture.ptr, srcrect), dstrect.x, dstrect.y)
+        tile_id = ((SDL_GetTicks() - start) / 200) % 16
+        for x in xrange(5, 10):
+            for y in xrange(5, 10):
+                blitter.blit_rect_to(sheet.get_tile_by_id((tile_id + x + 10 * y) % 16), 32 * x, 48 * y)
+
+        map.draw(blitter, 0, 0)
         renderer.present()
         # SDL_BlitSurface(image.ptr, NULL, window.surface, NULL)
         # SDL_UpdateWindowSurface(window.ptr)
