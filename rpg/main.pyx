@@ -1,5 +1,7 @@
 from .SDL2 cimport (
     SDLK_ESCAPE,
+    SDLK_UP,
+    SDLK_DOWN,
     SDLK_q,
     SDL_BlitSurface,
     SDL_CreateWindow,
@@ -62,9 +64,12 @@ cpdef run():
     cdef SDL_Event event
     cdef Uint32 start
     cdef Uint32 elapsed
+    cdef Uint32 last_tick
     cdef double fps
-    cdef int frames = 0
+    cdef int frames = 0, last_frames = 0
     cdef SDL_Rect srcrect, dstrect
+    cdef int tile_id = 0
+    cdef int x, y
 
     sdl = SDL()
 
@@ -76,8 +81,8 @@ cpdef run():
         600,
         SDL_WINDOW_SHOWN)
     renderer = Renderer_create(window.ptr, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
-    start = SDL_GetTicks()
     blitter = BasicBlitter(renderer)
+    start = last_tick = SDL_GetTicks()
     image = Surface_load('character.png')
     texture = renderer.texture_from_surface(image)
     sheet = SpriteSheet(texture, 32, 48)
@@ -103,6 +108,10 @@ cpdef run():
                 key = event.key.keysym.sym
                 if key == SDLK_q or key == SDLK_ESCAPE:
                     quit = True
+                elif key == SDLK_UP:
+                    tile_id += 1
+                elif key == SDLK_DOWN:
+                    tile_id -= 1
         renderer.set_draw_color(0, 0, 0, 255)
         renderer.clear()
         srcrect.x = dstrect.x = (frames) % (texture.width - 32)
@@ -117,6 +126,14 @@ cpdef run():
         # SDL_BlitSurface(image.ptr, NULL, window.surface, NULL)
         # SDL_UpdateWindowSurface(window.ptr)
         frames += 1
+        if SDL_GetTicks() - last_tick > 1000:
+            current = SDL_GetTicks()
+            elapsed = current - last_tick
+            fps = <double>(frames - last_frames) / <double> elapsed * 1000.
+            log_info("%d frames in %d ms. %.2f FPS", frames, elapsed, fps);
+            last_tick = current
+            last_frames = frames
+
     elapsed = SDL_GetTicks() - start
     fps = <double>frames / <double> elapsed * 1000.
     log_info("%d frames in %d ms. %.2f FPS", frames, elapsed, fps);
