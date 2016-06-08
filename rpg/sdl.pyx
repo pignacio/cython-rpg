@@ -192,6 +192,7 @@ cdef class Texture:
 
 cdef Texture Texture_wrap(SDL_Texture* ptr, int width, int height):
     assert width > 0
+    assert height > 0
     log_info("Wrapping Texture[%p] (%dx%d)", ptr, width, height)
     texture = Texture()
     texture.ptr = ptr
