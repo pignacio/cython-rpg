@@ -46,7 +46,7 @@ from .sdl cimport (
     Window,
     Window_create,
 )
-from rpg.gfx.blitter cimport Blitter, TextureRect
+from rpg.gfx.blitter cimport BasicBlitter, TextureRect
 from .logutils cimport log_info
 from libc.stdio cimport printf
 
@@ -69,9 +69,8 @@ cpdef main():
         600,
         SDL_WINDOW_SHOWN)
     renderer = Renderer_create(window.ptr, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
-    blitter = Blitter()
-    blitter.renderer = renderer
     start = SDL_GetTicks()
+    blitter = BasicBlitter(renderer)
     image = Surface_load('character.png')
     texture = renderer.texture_from_surface(image)
 

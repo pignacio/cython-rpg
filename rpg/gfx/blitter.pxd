@@ -11,8 +11,13 @@ cdef struct TextureRect:
     SDL_Texture* texture
     SDL_Rect rect
 
-
 cdef class Blitter:
+    cdef void blit_rect_to(self, TextureRect rect, int x, int y)
+    cdef void blit_rect_to_rect(self, TextureRect rect, const SDL_Rect* dest)
+    cdef void blit_full(self, SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dst)
+
+
+cdef class BasicBlitter(Blitter):
     cdef Renderer renderer
 
     cdef inline void blit_rect_to(self, TextureRect rect, int x, int y):
@@ -27,4 +32,4 @@ cdef class Blitter:
     cdef inline void blit_rect_to_rect(self, TextureRect rect, const SDL_Rect* dest):
         self.blit_full(rect.texture, &rect.rect, dest)
 
-    cdef inline void blit_full(self, SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dst)
+    cdef void blit_full(self, SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dst)
