@@ -1,7 +1,5 @@
 from .SDL2 cimport (
     SDLK_ESCAPE,
-    SDLK_UP,
-    SDLK_DOWN,
     SDLK_q,
     SDL_BlitSurface,
     SDL_CreateWindow,
@@ -17,6 +15,7 @@ from .SDL2 cimport (
     SDL_GL_SetSwapInterval,
     SDL_GL_SwapWindow,
     SDL_GetError,
+    SDL_GetKeyboardState,
     SDL_GetTicks,
     SDL_GetWindowSurface,
     SDL_INIT_EVERYTHING,
@@ -27,9 +26,13 @@ from .SDL2 cimport (
     SDL_PollEvent,
     SDL_QUIT,
     SDL_Quit,
-    SDL_Rect,
     SDL_RENDERER_ACCELERATED,
     SDL_RENDERER_PRESENTVSYNC,
+    SDL_Rect,
+    SDL_SCANCODE_DOWN,
+    SDL_SCANCODE_LEFT,
+    SDL_SCANCODE_RIGHT,
+    SDL_SCANCODE_UP,
     SDL_Surface,
     SDL_Texture,
     SDL_UpdateWindowSurface,
@@ -37,6 +40,7 @@ from .SDL2 cimport (
     SDL_WINDOW_OPENGL,
     SDL_WINDOW_SHOWN,
     SDL_Window,
+    Uint8,
     Uint32,
 )
 from .sdl cimport (
@@ -50,7 +54,8 @@ from .sdl cimport (
 )
 from rpg.gfx.blitter cimport BasicBlitter, TextureRect
 from rpg.image.sprite_sheet cimport SpriteSheet
-from rpg.map.map cimport Map, Tileset
+from rpg.map.map cimport Map, Tileset, Actor
+from rpg.types cimport Point
 from .logutils cimport log_info
 from libc.stdio cimport printf
 
@@ -70,6 +75,7 @@ cpdef run():
     cdef SDL_Rect srcrect, dstrect
     cdef int tile_id = 0
     cdef int x, y
+    cdef Uint8* keyboard_state
 
     sdl = SDL()
 
@@ -93,6 +99,7 @@ cpdef run():
     map_data = [[[x + y, 10 + x + y] for y in xrange(10)] for x in xrange(10)]
     tileset = Tileset(map_texture, tilesize)
     map = Map(tileset, 10, 10, 800, 600, map_data)
+    map.main_actor = Actor(sheet.get_tile_by_id(0), Point(100, 100), SDL_Rect(-10, -10, 20, 20))
 
     srcrect.x = dstrect.x = 0
     srcrect.y = dstrect.y = 0
@@ -108,18 +115,25 @@ cpdef run():
                 key = event.key.keysym.sym
                 if key == SDLK_q or key == SDLK_ESCAPE:
                     quit = True
-                elif key == SDLK_UP:
-                    tile_id += 1
-                elif key == SDLK_DOWN:
-                    tile_id -= 1
+
+        keyboard_state = SDL_GetKeyboardState(NULL)
+        if keyboard_state[<int>SDL_SCANCODE_UP]:
+            map.main_actor.position.y -= 1
+        if keyboard_state[<int>SDL_SCANCODE_DOWN]:
+            map.main_actor.position.y += 1
+        if keyboard_state[<int>SDL_SCANCODE_LEFT]:
+            map.main_actor.position.x -= 1
+        if keyboard_state[<int>SDL_SCANCODE_RIGHT]:
+            map.main_actor.position.x += 1
+
         renderer.set_draw_color(0, 0, 0, 255)
         renderer.clear()
         srcrect.x = dstrect.x = (frames) % (texture.width - 32)
         srcrect.y = dstrect.y = (frames * 2) % (texture.height - 32)
         tile_id = ((SDL_GetTicks() - start) / 200) % 16
-        for x in xrange(5, 10):
-            for y in xrange(5, 10):
-                blitter.blit_rect_to(sheet.get_tile_by_id((tile_id + x + 10 * y) % 16), 32 * x, 48 * y)
+        # for x in xrange(5, 10):
+        #     for y in xrange(5, 10):
+        #         blitter.blit_rect_to(sheet.get_tile_by_id((tile_id + x + 10 * y) % 16), 32 * x, 48 * y)
 
         map.draw(blitter, 0, 0)
         renderer.present()

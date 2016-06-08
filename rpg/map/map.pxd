@@ -1,13 +1,16 @@
 from cpython cimport array
 import array
 
-from rpg.gfx.blitter cimport Blitter
+from rpg.gfx.blitter cimport Blitter, TextureRect
 from rpg.image.sprite_sheet cimport SpriteSheet
+from rpg.types cimport Point
+from rpg.SDL2 cimport SDL_Rect
 
 
 cdef class Tileset(SpriteSheet):
     cdef inline int tilesize(self):
         return self.sprite_height
+
 
 cdef class Matrix:
     cdef int shift
@@ -35,6 +38,12 @@ cdef class Cube:
         return self.ptr[self._index(x, y, z)]
 
 
+cdef struct Actor:
+    TextureRect image
+    Point position
+    SDL_Rect collision_box
+
+
 cdef class Map:
     cdef:
         Tileset tileset
@@ -43,5 +52,6 @@ cdef class Map:
         int draw_width
         int draw_height
         Cube data
+        Actor main_actor
 
     cdef draw(self, Blitter blitteri, int x, int y)

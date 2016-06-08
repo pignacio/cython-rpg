@@ -78,6 +78,4 @@ cdef class Map:
                             tilesize * current_y - y
                         )
 
-
-
-
+        blitter.blit_rect_to(self.main_actor.image, <int>self.main_actor.position.x, <int>self.main_actor.position.y)
