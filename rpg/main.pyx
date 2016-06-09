@@ -144,7 +144,7 @@ cpdef run():
             current = SDL_GetTicks()
             elapsed = current - last_tick
             fps = <double>(frames - last_frames) / <double> elapsed * 1000.
-            log_info("%d frames in %d ms. %.2f FPS", frames, elapsed, fps);
+            log_info("%d frames in %d ms. %.2f FPS", frames - last_frames, elapsed, fps)
             last_tick = current
             last_frames = frames
 
