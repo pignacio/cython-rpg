@@ -18,7 +18,9 @@ cdef class SDL:
 
 cdef class Window:
     cdef SDL_Window* ptr
-cdef Window Window_create(const char* title, int x, int y, int w, int h, Uint32 flags)
+
+    @staticmethod
+    cdef Window create(const char* title, int x, int y, int w, int h, Uint32 flags)
 
 
 cdef class Renderer:

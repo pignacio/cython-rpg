@@ -80,17 +80,17 @@ cdef class Window:
     def __nonzero__(self):
         return self.ptr != NULL
 
-
-cdef Window Window_create(const char* title, int x, int y, int w, int h, Uint32 flags):
-    log_info("Creating Window '%s' (%d,%d,%d,%d)[%d]", title, x, y, w, h, flags)
-    cdef SDL_Window* cWindow = SDL_CreateWindow(title, x, y, w, h, flags)
-    window = Window()
-    window.ptr = cWindow
-    if not cWindow:
-        log_sdl_err("Could not create window.")
-    else:
-        log_info("Created Window[%p]", cWindow)
-    return window
+    @staticmethod
+    cdef Window create(const char* title, int x, int y, int w, int h, Uint32 flags):
+        log_info("Creating Window '%s' (%d,%d,%d,%d)[%d]", title, x, y, w, h, flags)
+        cdef SDL_Window* cWindow = SDL_CreateWindow(title, x, y, w, h, flags)
+        window = Window()
+        window.ptr = cWindow
+        if not cWindow:
+            log_sdl_err("Could not create window.")
+        else:
+            log_info("Created Window[%p]", cWindow)
+        return window
 
 
 cdef class Renderer:

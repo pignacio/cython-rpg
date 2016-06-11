@@ -47,7 +47,7 @@ from .sdl cimport (
     Renderer,
     SDL,
     Surface,
-    Window_create,
+    Window,
 )
 from rpg.gfx.blitter cimport BasicBlitter, TextureRect
 from rpg.image.sprite_sheet cimport SpriteSheet
@@ -80,7 +80,7 @@ cpdef run():
 
     sdl = SDL()
 
-    window = Window_create(
+    window = Window.create(
         "SDL Tutorial",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
