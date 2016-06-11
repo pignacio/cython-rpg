@@ -11,6 +11,7 @@ from .SDL2 cimport (
     SDL_DestroyWindow,
     SDL_FreeSurface,
     SDL_GetError,
+    SDL_GetKeyboardState,
     SDL_GetWindowSurface,
     SDL_INIT_EVERYTHING,
     SDL_Init,
@@ -203,3 +204,11 @@ cdef Texture Texture_wrap(SDL_Texture* ptr, int width, int height):
     texture.width = width
     texture.height = height
     return texture
+
+
+cdef class KeyboardState:
+    def __cinit__(self):
+        self.update()
+
+    cdef void update(self):
+        self.state = SDL_GetKeyboardState(NULL)

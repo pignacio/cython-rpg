@@ -6,6 +6,7 @@ from SDL2 cimport (
     SDL_Surface,
     SDL_Texture,
     SDL_Window,
+    SDL_Scancode,
     Uint8,
     Uint32,
 )
@@ -51,3 +52,12 @@ cdef class Texture:
 
     cdef int set_blend_mode(self, SDL_BlendMode mode)
 cdef Texture Texture_wrap(SDL_Texture* ptr, int width, int height)
+
+
+cdef class KeyboardState:
+    cdef Uint8* state
+
+    cdef void update(self)
+
+    cdef inline bint isOn(self, SDL_Scancode key):
+        return self.state[<int>key]

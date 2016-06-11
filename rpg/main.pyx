@@ -15,7 +15,6 @@ from .SDL2 cimport (
     SDL_GL_SetSwapInterval,
     SDL_GL_SwapWindow,
     SDL_GetError,
-    SDL_GetKeyboardState,
     SDL_GetTicks,
     SDL_GetWindowSurface,
     SDL_INIT_EVERYTHING,
@@ -44,6 +43,7 @@ from .SDL2 cimport (
     Uint32,
 )
 from .sdl cimport (
+    KeyboardState,
     Renderer,
     Renderer_create,
     SDL,
@@ -76,10 +76,10 @@ cpdef run():
     cdef int tile_id = 0
     cdef int x, y
     cdef int size = 8
-    cdef Uint8* keyboard_state
     cdef IntPoint direction, last_direction
     cdef SDL_Rect actor_actionpoint
     cdef double speed
+    cdef KeyboardState keyboard_state = KeyboardState()
 
     sdl = SDL()
 
@@ -121,15 +121,15 @@ cpdef run():
                 if key == SDLK_q or key == SDLK_ESCAPE:
                     quit = True
 
-        keyboard_state = SDL_GetKeyboardState(NULL)
+        keyboard_state.update()
         direction.x = direction.y = 0
-        if keyboard_state[<int>SDL_SCANCODE_UP]:
+        if keyboard_state.isOn(SDL_SCANCODE_UP):
             direction.y -= 1
-        if keyboard_state[<int>SDL_SCANCODE_DOWN]:
+        if keyboard_state.isOn(SDL_SCANCODE_DOWN):
             direction.y += 1
-        if keyboard_state[<int>SDL_SCANCODE_LEFT]:
+        if keyboard_state.isOn(SDL_SCANCODE_LEFT):
             direction.x -= 1
-        if keyboard_state[<int>SDL_SCANCODE_RIGHT]:
+        if keyboard_state.isOn(SDL_SCANCODE_RIGHT):
             direction.x += 1
 
         ticks = SDL_GetTicks()
