@@ -69,15 +69,17 @@ cpdef run():
     cdef SDL_Event event
     cdef Uint32 start
     cdef Uint32 elapsed
-    cdef Uint32 last_tick
+    cdef Uint32 ticks, last_ticks, last_tick
     cdef double fps
     cdef int frames = 0, last_frames = 0
     cdef SDL_Rect srcrect, dstrect
     cdef int tile_id = 0
     cdef int x, y
+    cdef int size = 8
     cdef Uint8* keyboard_state
     cdef IntPoint direction, last_direction
     cdef SDL_Rect actor_actionpoint
+    cdef double speed
 
     sdl = SDL()
 
@@ -109,6 +111,7 @@ cpdef run():
     srcrect.h = dstrect.h = 32
 
     quit = False
+    last_ticks = SDL_GetTicks()
     while not quit:
         while SDL_PollEvent(&event):
             if event.type == SDL_QUIT:
@@ -129,9 +132,14 @@ cpdef run():
         if keyboard_state[<int>SDL_SCANCODE_RIGHT]:
             direction.x += 1
 
+        ticks = SDL_GetTicks()
+        elapsed = ticks - last_ticks
+        last_ticks = ticks
+
         if direction.x or direction.y:
-            map.main_actor.position.x += direction.x
-            map.main_actor.position.y += direction.y
+            speed = .2 * elapsed
+            map.main_actor.position.x += speed * direction.x
+            map.main_actor.position.y += speed * direction.y
             last_direction = direction
 
         renderer.set_draw_color(0, 0, 0, 255)
@@ -146,9 +154,12 @@ cpdef run():
         map.draw(blitter, 0, 0)
 
         # Draw actor actionpoint
-        size = 8
         renderer.set_draw_color(255, 0, 0, 255)
-        actor_actionpoint = SDL_Rect(map.main_actor.position.x + last_direction.x * 16 - size/2, map.main_actor.position.y + last_direction.y * 16 - size/2, size, size)
+        actor_actionpoint = SDL_Rect(
+            <int>map.main_actor.position.x + last_direction.x * 16 - size/2,
+            <int>map.main_actor.position.y + last_direction.y * 16 - size/2,
+            size,
+            size)
         renderer.fill_rect(&actor_actionpoint)
 
         renderer.present()
