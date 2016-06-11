@@ -25,6 +25,7 @@ cdef class Renderer:
 
     cdef int clear(self)
     cdef void present(self)
+    cdef int fill_rect(self, const SDL_Rect* rect)
     cdef int set_draw_color(self, Uint8 r, Uint8 g, Uint8 b, Uint8 a)
     cdef int copy_ptr(self, SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dest)
     cdef inline int copy(self, Texture texture, const SDL_Rect* src, const SDL_Rect* dest):

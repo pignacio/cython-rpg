@@ -19,6 +19,7 @@ from .SDL2 cimport (
     SDL_Rect,
     SDL_RenderClear,
     SDL_RenderCopy,
+    SDL_RenderFillRect,
     SDL_RenderPresent,
     SDL_SetTextureBlendMode,
     SDL_SetRenderDrawColor,
@@ -109,6 +110,9 @@ cdef class Renderer:
 
     cdef int set_draw_color(self, Uint8 r, Uint8 g, Uint8 b, Uint8 a):
         return SDL_SetRenderDrawColor(self.ptr, r, g, b, a)
+
+    cdef int fill_rect(self, const SDL_Rect* rect):
+        return SDL_RenderFillRect(self.ptr, rect)
 
     cdef int copy_ptr(self, SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dest):
         return SDL_RenderCopy(self.ptr, texture, src, dest)
