@@ -64,6 +64,7 @@ cdef class Map:
         cdef int draw_y_start = max(y / tilesize, 0)
         cdef int draw_y_end = min(draw_y_start + self.draw_height / tilesize, self.height)
         cdef int current_x, current_y, current_z
+        cdef TextureRect actor_image
         # cdef TextureRect tex_rect
 
         for current_x in range(draw_x_start, draw_x_end):
@@ -77,5 +78,9 @@ cdef class Map:
                             tilesize * current_x - x,
                             tilesize * current_y - y
                         )
-
-        blitter.blit_rect_to(self.main_actor.image, <int>self.main_actor.position.x, <int>self.main_actor.position.y)
+        image = self.main_actor.image
+        blitter.blit_rect_to(
+            image,
+            <int>self.main_actor.position.x - image.rect.w / 2,
+            <int>self.main_actor.position.y - (image.rect.h - 5),
+        )
