@@ -45,7 +45,6 @@ from .SDL2 cimport (
 from .sdl cimport (
     KeyboardState,
     Renderer,
-    Renderer_create,
     SDL,
     Surface,
     Window_create,
@@ -88,7 +87,7 @@ cpdef run():
         800,
         600,
         SDL_WINDOW_SHOWN)
-    renderer = Renderer_create(window.ptr, SDL_RENDERER_ACCELERATED)
+    renderer = Renderer.create(window.ptr, SDL_RENDERER_ACCELERATED)
     blitter = BasicBlitter(renderer)
     start = last_tick = SDL_GetTicks()
     image = Surface.load('character.png')

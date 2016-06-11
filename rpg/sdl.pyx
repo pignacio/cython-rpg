@@ -126,17 +126,19 @@ cdef class Renderer:
         else:
             return Texture.wrap(texture, surface.w, surface.h)
 
-cdef Renderer Renderer_create(SDL_Window *window, Uint32 flags):
-    log_info("Creating Renderer from Window[%p]", window)
-    cdef SDL_Renderer* ptr = SDL_CreateRenderer(window, -1, flags)
-    if not ptr:
-        log_sdl_err("Could not create renderer from Window[%p]", window)
-        return None
-    else:
-        log_info("Created Renderer[%p]", ptr)
-        res = Renderer()
-        res.ptr = ptr
-        return res
+    @staticmethod
+    cdef Renderer create(SDL_Window *window, Uint32 flags):
+        assert window
+        log_info("Creating Renderer from Window[%p]", window)
+        cdef SDL_Renderer* ptr = SDL_CreateRenderer(window, -1, flags)
+        if not ptr:
+            log_sdl_err("Could not create renderer from Window[%p]", window)
+            return None
+        else:
+            log_info("Created Renderer[%p]", ptr)
+            res = Renderer()
+            res.ptr = ptr
+            return res
 
 cdef class Surface:
     def __dealloc__(self):

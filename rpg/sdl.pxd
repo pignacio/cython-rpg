@@ -35,7 +35,8 @@ cdef class Renderer:
     cdef Texture texture_from_surface_ptr(self, SDL_Surface* surface)
     cdef inline Texture texture_from_surface(self, Surface surface):
         return self.texture_from_surface_ptr(surface.ptr)
-cdef Renderer Renderer_create(SDL_Window* window, Uint32 flags)
+    @staticmethod
+    cdef Renderer create(SDL_Window* window, Uint32 flags)
 
 
 cdef class Surface:
