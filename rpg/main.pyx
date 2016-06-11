@@ -72,7 +72,7 @@ cpdef run():
     cdef SDL_Rect srcrect, dstrect
     cdef int tile_id = 0
     cdef int x, y
-    cdef int size = 8
+    cdef int size = 4
     cdef IntPoint direction, last_direction
     cdef SDL_Rect actor_actionpoint
     cdef double speed
