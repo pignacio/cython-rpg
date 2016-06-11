@@ -41,8 +41,10 @@ cdef Renderer Renderer_create(SDL_Window* window, Uint32 flags)
 cdef class Surface:
     cdef SDL_Surface* ptr
     cdef Surface optimized_for(self, SDL_PixelFormat* format)
-cdef Surface Surface_wrap(SDL_Surface* ptr)
-cdef Surface Surface_load(const char* path, SDL_PixelFormat* format=*)
+    @staticmethod
+    cdef Surface wrap(SDL_Surface* ptr)
+    @staticmethod
+    cdef Surface load(const char* path, SDL_PixelFormat* format=*)
 
 
 cdef class Texture:

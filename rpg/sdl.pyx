@@ -156,26 +156,26 @@ cdef class Surface:
         if not optimized:
             log_sdl_err("Failed to optimize Surface[%p]", self.ptr)
         log_info("Optimized Surface[%p] -> Surface[%p]", self.ptr, optimized)
-        return Surface_wrap(optimized)
+        return Surface.wrap(optimized)
 
+    @staticmethod
+    cdef Surface wrap(SDL_Surface* ptr):
+        log_info("Wrapping Surface[%p]", ptr)
+        cdef Surface surface = Surface()
+        surface.ptr = ptr
+        return surface
 
-cdef Surface Surface_wrap(SDL_Surface* ptr):
-    log_info("Wrapping Surface[%p]", ptr)
-    cdef Surface surface = Surface()
-    surface.ptr = ptr
-    return surface
-
-
-cdef Surface Surface_load(const char* path, SDL_PixelFormat* format=NULL):
-    cdef SDL_Surface* surface = IMG_Load(path)
-    cdef Surface res
-    if not surface:
-        log_sdl_err("Could not load image '%s'", path)
-        return None
-    res = Surface_wrap(surface)
-    if format:
-        res = res.optimized_for(format)
-    return res
+    @staticmethod
+    cdef Surface load(const char* path, SDL_PixelFormat* format=NULL):
+        cdef SDL_Surface* surface = IMG_Load(path)
+        cdef Surface res
+        if not surface:
+            log_sdl_err("Could not load image '%s'", path)
+            return None
+        res = Surface.wrap(surface)
+        if format:
+            res = res.optimized_for(format)
+        return res
 
 
 cdef class Texture:

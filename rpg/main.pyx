@@ -48,8 +48,6 @@ from .sdl cimport (
     Renderer_create,
     SDL,
     Surface,
-    Surface_load,
-    Window,
     Window_create,
 )
 from rpg.gfx.blitter cimport BasicBlitter, TextureRect
@@ -93,12 +91,12 @@ cpdef run():
     renderer = Renderer_create(window.ptr, SDL_RENDERER_ACCELERATED)
     blitter = BasicBlitter(renderer)
     start = last_tick = SDL_GetTicks()
-    image = Surface_load('character.png')
+    image = Surface.load('character.png')
     texture = renderer.texture_from_surface(image)
     sheet = SpriteSheet(texture, 32, 48)
     log_info("Sheet is %d x %d", sheet._width(), sheet._height())
 
-    map_texture = renderer.texture_from_surface(Surface_load('tileset3.png'))
+    map_texture = renderer.texture_from_surface(Surface.load('tileset3.png'))
     tilesize = 32
     map_data = [[[x + y, 10 + x + y] for y in xrange(10)] for x in xrange(10)]
     tileset = Tileset(map_texture, tilesize)
