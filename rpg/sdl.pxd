@@ -51,7 +51,8 @@ cdef class Texture:
     cdef int height
 
     cdef int set_blend_mode(self, SDL_BlendMode mode)
-cdef Texture Texture_wrap(SDL_Texture* ptr, int width, int height)
+    @staticmethod
+    cdef Texture wrap(SDL_Texture* ptr, int width, int height)
 
 
 cdef class KeyboardState:

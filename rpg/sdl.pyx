@@ -124,7 +124,7 @@ cdef class Renderer:
             log_sdl_err("Could not create texture from Surface[%p]", surface)
             return None
         else:
-            return Texture_wrap(texture, surface.w, surface.h)
+            return Texture.wrap(texture, surface.w, surface.h)
 
 cdef Renderer Renderer_create(SDL_Window *window, Uint32 flags):
     log_info("Creating Renderer from Window[%p]", window)
@@ -194,16 +194,17 @@ cdef class Texture:
             log_sdl_warn("Could not set blend mode for Texture[%p]", self.ptr)
         return res
 
-
-cdef Texture Texture_wrap(SDL_Texture* ptr, int width, int height):
-    assert width > 0
-    assert height > 0
-    log_info("Wrapping Texture[%p] (%dx%d)", ptr, width, height)
-    texture = Texture()
-    texture.ptr = ptr
-    texture.width = width
-    texture.height = height
-    return texture
+    @staticmethod
+    cdef Texture wrap(SDL_Texture* ptr, int width, int height):
+        assert ptr
+        assert width > 0
+        assert height > 0
+        log_info("Wrapping Texture[%p] (%dx%d)", ptr, width, height)
+        texture = Texture()
+        texture.ptr = ptr
+        texture.width = width
+        texture.height = height
+        return texture
 
 
 cdef class KeyboardState:
