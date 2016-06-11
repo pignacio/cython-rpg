@@ -55,7 +55,7 @@ from .sdl cimport (
 from rpg.gfx.blitter cimport BasicBlitter, TextureRect
 from rpg.image.sprite_sheet cimport SpriteSheet
 from rpg.map.map cimport Map, Tileset, Actor
-from rpg.types cimport Point
+from rpg.types cimport Point, IntPoint
 from .logutils cimport log_info
 from libc.stdio cimport printf
 
@@ -76,6 +76,8 @@ cpdef run():
     cdef int tile_id = 0
     cdef int x, y
     cdef Uint8* keyboard_state
+    cdef IntPoint direction, last_direction
+    cdef SDL_Rect actor_actionpoint
 
     sdl = SDL()
 
@@ -117,14 +119,20 @@ cpdef run():
                     quit = True
 
         keyboard_state = SDL_GetKeyboardState(NULL)
+        direction.x = direction.y = 0
         if keyboard_state[<int>SDL_SCANCODE_UP]:
-            map.main_actor.position.y -= 1
+            direction.y -= 1
         if keyboard_state[<int>SDL_SCANCODE_DOWN]:
-            map.main_actor.position.y += 1
+            direction.y += 1
         if keyboard_state[<int>SDL_SCANCODE_LEFT]:
-            map.main_actor.position.x -= 1
+            direction.x -= 1
         if keyboard_state[<int>SDL_SCANCODE_RIGHT]:
-            map.main_actor.position.x += 1
+            direction.x += 1
+
+        if direction.x or direction.y:
+            map.main_actor.position.x += direction.x
+            map.main_actor.position.y += direction.y
+            last_direction = direction
 
         renderer.set_draw_color(0, 0, 0, 255)
         renderer.clear()
@@ -136,6 +144,13 @@ cpdef run():
         #         blitter.blit_rect_to(sheet.get_tile_by_id((tile_id + x + 10 * y) % 16), 32 * x, 48 * y)
 
         map.draw(blitter, 0, 0)
+
+        # Draw actor actionpoint
+        size = 8
+        renderer.set_draw_color(255, 0, 0, 255)
+        actor_actionpoint = SDL_Rect(map.main_actor.position.x + last_direction.x * 16 - size/2, map.main_actor.position.y + last_direction.y * 16 - size/2, size, size)
+        renderer.fill_rect(&actor_actionpoint)
+
         renderer.present()
         # SDL_BlitSurface(image.ptr, NULL, window.surface, NULL)
         # SDL_UpdateWindowSurface(window.ptr)
