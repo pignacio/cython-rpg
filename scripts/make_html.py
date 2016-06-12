@@ -17,7 +17,7 @@ def make_html(fname):
         return
 
     basename = os.path.basename(fname).rsplit(".", 1)[0]
-    dest = os.path.join(os.path.dirname(fname), basename + ".html")
+    dest = fname.rsplit(".", 1)[0]  + ".html"
 
     if os.path.isfile(dest) and os.path.getmtime(fname) < os.path.getmtime(dest):
         print "{}: html is up to date".format(fname)

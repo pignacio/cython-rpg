@@ -17,9 +17,7 @@ def print_tree(tree):
         print '<li class="jstree-open">'
         filename = subtree.get(_FILENAME)
         if filename:
-            html_name = filename[:-4] + ".html"
-            c_name = filename[:-4] + ".c"
-            print "<a href='{}'>{}</a>".format(html_name, name)
+            print "<a href='{}'>{}</a>".format(filename, name)
             print filename
         else:
             print name

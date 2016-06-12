@@ -9,6 +9,9 @@ clean: clean-so
 clean-so:
 	find rpg -name "*.so" -delete
 
+clean-html:
+	find rpg -name "*.html" -delete
+
 build_ext:
 	python setup.py build_ext --inplace
 
@@ -17,7 +20,7 @@ run: build_ext
 
 html:
 	find rpg -name "*.pyx" -exec python scripts/make_html.py {} +
-	find rpg -name "*.pyx" | python scripts/make_html_tree.py > tree.html
+	find rpg -name "*.html" | python scripts/make_html_tree.py > tree.html
 
 # vim:ft=make
 #
