@@ -28,10 +28,6 @@ from .SDL2 cimport (
     SDL_RENDERER_ACCELERATED,
     SDL_RENDERER_PRESENTVSYNC,
     SDL_Rect,
-    SDL_SCANCODE_DOWN,
-    SDL_SCANCODE_LEFT,
-    SDL_SCANCODE_RIGHT,
-    SDL_SCANCODE_UP,
     SDL_Surface,
     SDL_Texture,
     SDL_UpdateWindowSurface,
@@ -72,8 +68,6 @@ cpdef run():
     cdef SDL_Rect srcrect, dstrect
     cdef int tile_id = 0
     cdef int x, y
-    cdef int size = 4
-    cdef IntPoint direction, last_direction
     cdef SDL_Rect actor_actionpoint
     cdef double speed
     cdef KeyboardState keyboard_state = KeyboardState()
@@ -119,25 +113,11 @@ cpdef run():
                     quit = True
 
         keyboard_state.update()
-        direction.x = direction.y = 0
-        if keyboard_state.isOn(SDL_SCANCODE_UP):
-            direction.y -= 1
-        if keyboard_state.isOn(SDL_SCANCODE_DOWN):
-            direction.y += 1
-        if keyboard_state.isOn(SDL_SCANCODE_LEFT):
-            direction.x -= 1
-        if keyboard_state.isOn(SDL_SCANCODE_RIGHT):
-            direction.x += 1
-
         ticks = SDL_GetTicks()
         elapsed = ticks - last_ticks
         last_ticks = ticks
 
-        if direction.x or direction.y:
-            speed = .2 * elapsed
-            map.main_actor.position.x += speed * direction.x
-            map.main_actor.position.y += speed * direction.y
-            last_direction = direction
+        map.process(elapsed, keyboard_state)
 
         renderer.set_draw_color(0, 0, 0, 255)
         renderer.clear()
@@ -149,15 +129,6 @@ cpdef run():
         #         blitter.blit_rect_to(sheet.get_tile_by_id((tile_id + x + 10 * y) % 16), 32 * x, 48 * y)
 
         map.draw(blitter, 0, 0)
-
-        # Draw actor actionpoint
-        renderer.set_draw_color(255, 0, 0, 255)
-        actor_actionpoint = SDL_Rect(
-            <int>map.main_actor.position.x + last_direction.x * 16 - size/2,
-            <int>map.main_actor.position.y + last_direction.y * 16 - size/2,
-            size,
-            size)
-        renderer.fill_rect(&actor_actionpoint)
 
         renderer.present()
         # SDL_BlitSurface(image.ptr, NULL, window.surface, NULL)

@@ -10,6 +10,8 @@ cdef class Blitter:
         raise NotImplementedError()
     cdef void blit_full(self, SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dst):
         raise NotImplementedError()
+    cdef void fill_rect(self, const SDL_Rect* rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a=255):
+        raise NotImplementedError()
 
 
 cdef class BasicBlitter(Blitter):
@@ -18,3 +20,7 @@ cdef class BasicBlitter(Blitter):
 
     cdef void blit_full(self, SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dst):
         self.renderer.copy_ptr(texture, src, dst)
+
+    cdef void fill_rect(self, const SDL_Rect* rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a=255):
+        self.renderer.set_draw_color(r, g, b, a)
+        self.renderer.fill_rect(rect)

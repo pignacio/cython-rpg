@@ -1,6 +1,7 @@
 from rpg.SDL2 cimport (
     SDL_Texture,
     SDL_Rect,
+    Uint8,
 )
 from rpg.sdl cimport (
     Renderer,
@@ -15,6 +16,7 @@ cdef class Blitter:
     cdef void blit_rect_to(self, TextureRect rect, int x, int y)
     cdef void blit_rect_to_rect(self, TextureRect rect, const SDL_Rect* dest)
     cdef void blit_full(self, SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dst)
+    cdef void fill_rect(self, const SDL_Rect* rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a=*)
 
 
 cdef class BasicBlitter(Blitter):
@@ -33,3 +35,4 @@ cdef class BasicBlitter(Blitter):
         self.blit_full(rect.texture, &rect.rect, dest)
 
     cdef void blit_full(self, SDL_Texture* texture, const SDL_Rect* src, const SDL_Rect* dst)
+    cdef void fill_rect(self, const SDL_Rect* rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a=*)

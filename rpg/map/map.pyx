@@ -2,9 +2,16 @@
 from cpython cimport array
 import array
 
+from rpg.SDL2 cimport (
+    SDL_SCANCODE_DOWN,
+    SDL_SCANCODE_LEFT,
+    SDL_SCANCODE_RIGHT,
+    SDL_SCANCODE_UP,
+)
 from rpg.gfx.blitter cimport Blitter, TextureRect
 from rpg.image.sprite_sheet cimport SpriteSheet
-from rpg.sdl cimport Texture
+from rpg.sdl cimport Texture, KeyboardState
+from rpg.types cimport IntPoint
 
 
 cdef class Tileset(SpriteSheet):
@@ -65,7 +72,8 @@ cdef class Map:
         cdef int draw_y_end = min(draw_y_start + self.draw_height / tilesize, self.height)
         cdef int current_x, current_y, current_z
         cdef TextureRect actor_image
-        # cdef TextureRect tex_rect
+        cdef int size = 4
+        cdef SDL_Rect actor_actionpoint
 
         for current_x in range(draw_x_start, draw_x_end):
             for current_y in range(draw_y_start, draw_y_end):
@@ -84,3 +92,29 @@ cdef class Map:
             <int>self.main_actor.position.x - image.rect.w / 2,
             <int>self.main_actor.position.y - (image.rect.h - 5),
         )
+
+        # Draw actor actionpoint
+        actor_actionpoint = SDL_Rect(
+            <int>self.main_actor.position.x + self.main_actor.last_direction.x * 24 - size/2,
+            <int>self.main_actor.position.y + self.main_actor.last_direction.y * 24 - size/2,
+            size,
+            size)
+        blitter.fill_rect(&actor_actionpoint, 255, 0, 0)
+
+    cdef process(self, int ticks, KeyboardState keyboard_state):
+        cdef IntPoint direction = IntPoint(0, 0)
+        cdef double speed
+        if keyboard_state.isOn(SDL_SCANCODE_UP):
+            direction.y -= 1
+        if keyboard_state.isOn(SDL_SCANCODE_DOWN):
+            direction.y += 1
+        if keyboard_state.isOn(SDL_SCANCODE_LEFT):
+            direction.x -= 1
+        if keyboard_state.isOn(SDL_SCANCODE_RIGHT):
+            direction.x += 1
+
+        if direction.x or direction.y:
+            speed = .2 * ticks
+            self.main_actor.position.x += speed * direction.x
+            self.main_actor.position.y += speed * direction.y
+            self.main_actor.last_direction = direction
