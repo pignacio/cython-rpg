@@ -36,6 +36,10 @@ from .SDL2_image cimport (
     IMG_Load,
     IMG_Quit,
 )
+from .SDL2_ttf cimport (
+    TTF_Init,
+    TTF_Quit,
+)
 from .logutils cimport log_info, log_sdl_err, log_sdl_warn
 
 
@@ -43,6 +47,7 @@ cdef class SDL:
     def __cinit__(self):
         self.sdl_inited = False
         self.sdl_image_inited = False
+        self.sdl_ttf_inited = False
 
         log_info("Initing SDL")
         if SDL_Init(SDL_INIT_EVERYTHING) < 0:
@@ -59,8 +64,19 @@ cdef class SDL:
         else:
             self.sdl_image_inited = True
 
+        log_info("Initing SDL_ttf")
+        if TTF_Init() < 0:
+            log_sdl_err("Could not init SDL_ttf")
+        else:
+            self.sdl_ttf_inited = True
+
     def __dealloc__(self):
         log_info("Cleaning SDL")
+        log_info("Last SDL error: '%s'", SDL_GetError())
+        if self.sdl_ttf_inited:
+            log_info("Quitting SDL_ttf")
+            TTF_Quit()
+
         if self.sdl_image_inited:
             log_info("Quitting SDL_image")
             IMG_Quit()

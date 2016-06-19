@@ -14,7 +14,7 @@ CYTHON_EXTENSIONS = (
     Extension('*',
               ["rpg/**/*.pyx"],
               include_dirs=['rpg'],
-              libraries=['SDL2', 'SDL2_image'],
+              libraries=['SDL2', 'SDL2_image', 'SDL2_ttf'],
 #               define_macros=[('CYTHON_WITHOUT_ASSERTIONS', 1)],
               extra_compile_args=['-Wno-unused-function',
                                   '-Wno-incompatible-pointer-types',

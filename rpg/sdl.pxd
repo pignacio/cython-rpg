@@ -14,6 +14,7 @@ from SDL2 cimport (
 cdef class SDL:
     cdef bint sdl_inited
     cdef bint sdl_image_inited
+    cdef bint sdl_ttf_inited
 
 
 cdef class Window:
