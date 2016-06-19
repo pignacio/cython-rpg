@@ -3,6 +3,7 @@ from .SDL2 cimport (
     SDLK_q,
     SDL_BlitSurface,
     SDL_CreateWindow,
+    SDL_Color,
     SDL_Delay,
     SDL_DestroyWindow,
     SDL_Event,
@@ -39,10 +40,12 @@ from .SDL2 cimport (
     Uint32,
 )
 from .sdl cimport (
+    Font,
     KeyboardState,
     Renderer,
     SDL,
     Surface,
+    Texture,
     Window,
 )
 from rpg.gfx.blitter cimport BasicBlitter, TextureRect
@@ -59,6 +62,12 @@ def main():
     cProfile.runctx("run()", globals(), locals(), sort='cumulative')
 
 cpdef run():
+    sdl = SDL()
+    res = run2(sdl)
+    log_info("Finished running")
+    return res
+
+cdef run2(SDL sdl):
     cdef SDL_Event event
     cdef Uint32 start
     cdef Uint32 elapsed
@@ -71,8 +80,10 @@ cpdef run():
     cdef SDL_Rect actor_actionpoint
     cdef double speed
     cdef KeyboardState keyboard_state = KeyboardState()
+    cdef Surface text
+    cdef Texture text_texture
+    cdef TextureRect text_rect
 
-    sdl = SDL()
 
     window = Window.create(
         "SDL Tutorial",
@@ -95,6 +106,11 @@ cpdef run():
     tileset = Tileset(map_texture, tilesize)
     map = Map(tileset, 10, 10, 800, 600, map_data)
     map.main_actor = Actor(sheet.get_tile_by_id(0), Point(100, 100), SDL_Rect(-10, -10, 20, 20))
+
+    font = Font.open("data-latin.ttf", 30)
+    text = font.render_text_solid("Testing SDL_ttf!", SDL_Color(255, 255, 255, 255))
+    text_texture = renderer.texture_from_surface(text)
+    text_rect = TextureRect(text_texture.ptr, SDL_Rect(0, 0, text.ptr.w, text.ptr.h))
 
     srcrect.x = dstrect.x = 0
     srcrect.y = dstrect.y = 0
@@ -129,6 +145,7 @@ cpdef run():
         #         blitter.blit_rect_to(sheet.get_tile_by_id((tile_id + x + 10 * y) % 16), 32 * x, 48 * y)
 
         map.draw(blitter, 0, 0)
+        blitter.blit_rect_to(text_rect, 200, 200)
 
         renderer.present()
         # SDL_BlitSurface(image.ptr, NULL, window.surface, NULL)
