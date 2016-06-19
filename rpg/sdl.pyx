@@ -2,9 +2,10 @@ from libc.stdio cimport printf
 
 from .SDL2 cimport (
     SDL_BlendMode,
+    SDL_Color,
     SDL_ConvertSurface,
-    SDL_CreateTextureFromSurface,
     SDL_CreateRenderer,
+    SDL_CreateTextureFromSurface,
     SDL_CreateWindow,
     SDL_DestroyRenderer,
     SDL_DestroyTexture,
@@ -22,8 +23,8 @@ from .SDL2 cimport (
     SDL_RenderCopy,
     SDL_RenderFillRect,
     SDL_RenderPresent,
-    SDL_SetTextureBlendMode,
     SDL_SetRenderDrawColor,
+    SDL_SetTextureBlendMode,
     SDL_Surface,
     SDL_Window,
     Uint32,
@@ -37,8 +38,11 @@ from .SDL2_image cimport (
     IMG_Quit,
 )
 from .SDL2_ttf cimport (
+    TTF_CloseFont,
     TTF_Init,
+    TTF_OpenFont,
     TTF_Quit,
+    TTF_RenderText_Solid,
 )
 from .logutils cimport log_info, log_sdl_err, log_sdl_warn
 
@@ -223,6 +227,37 @@ cdef class Texture:
         texture.width = width
         texture.height = height
         return texture
+
+
+cdef class Font:
+    def __dealloc__(self):
+        log_info("Closing Font[%p]", self.ptr)
+        TTF_CloseFont(self.ptr)
+        self.ptr = NULL
+
+    @staticmethod
+    cdef Font wrap(TTF_Font* ptr, int size):
+        assert ptr
+        log_info("Wrapping Font[%p] (%d)", ptr, size)
+        font = Font()
+        font.ptr = ptr
+        font.size = size
+        return font
+
+    @staticmethod
+    cdef Font open(const char* path, int size):
+        cdef TTF_Font* ptr = TTF_OpenFont(path, size)
+        if not ptr:
+            log_sdl_err("Could not load font '%s'", path)
+            return None
+        return Font.wrap(ptr, size)
+
+    cdef Surface render_text_solid(self, const char* text, SDL_Color color):
+        cdef SDL_Surface* ptr = TTF_RenderText_Solid(self.ptr, text, color)
+        if not ptr:
+            log_sdl_err("Font[%p]: Could not render '%s'", self.ptr, text)
+            return None
+        return Surface.wrap(ptr)
 
 
 cdef class KeyboardState:
