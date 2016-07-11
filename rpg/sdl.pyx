@@ -28,6 +28,8 @@ from .SDL2 cimport (
     SDL_RenderPresent,
     SDL_SetRenderDrawColor,
     SDL_SetTextureBlendMode,
+    SDL_SetTextureColorMod,
+    SDL_SetTextureAlphaMod,
     SDL_Surface,
     SDL_UnlockSurface,
     SDL_Window,
@@ -249,6 +251,18 @@ cdef class Texture:
         res = SDL_SetTextureBlendMode(self.ptr, mode)
         if res < 0:
             log_sdl_warn("Could not set blend mode for Texture[%p]", self.ptr)
+        return res
+
+    cdef int set_color_mod(self, Uint8 r, Uint8 g, Uint8 b):
+        res = SDL_SetTextureColorMod(self.ptr, r, g, b)
+        if res < 0:
+            log_sdl_warn("Could not set color mod for Texture[%p]", self.ptr)
+        return res
+
+    cdef int set_alpha_mod(self, Uint8 a):
+        res = SDL_SetTextureAlphaMod(self.ptr, a)
+        if res < 0:
+            log_sdl_warn("Could not set alpha mod for Texture[%p]", self.ptr)
         return res
 
     @staticmethod

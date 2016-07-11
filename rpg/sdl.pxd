@@ -69,6 +69,8 @@ cdef class Texture:
     cdef int height
 
     cdef int set_blend_mode(self, SDL_BlendMode mode)
+    cdef int set_color_mod(self, Uint8 r, Uint8 g, Uint8 b)
+    cdef int set_alpha_mod(self, Uint8 a)
     @staticmethod
     cdef Texture wrap(SDL_Texture* ptr, int width, int height)
 
