@@ -49,6 +49,7 @@ from .sdl cimport (
     Window,
 )
 from rpg.gfx.blitter cimport BasicBlitter, TextureRect
+from rpg cimport debug
 from rpg.image.sprite_sheet cimport SpriteSheet
 from rpg.map.map cimport Map, Tileset, Actor
 from rpg.types cimport Point, IntPoint
@@ -93,6 +94,7 @@ cdef run2(SDL sdl):
         600,
         SDL_WINDOW_SHOWN)
     renderer = Renderer.create(window.ptr, SDL_RENDERER_ACCELERATED)
+    debug.get_instance().renderer = renderer
     blitter = BasicBlitter(renderer)
     start = last_tick = SDL_GetTicks()
     image = Surface.load('character.png')
