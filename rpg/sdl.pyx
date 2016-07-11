@@ -16,6 +16,8 @@ from .SDL2 cimport (
     SDL_GetWindowSurface,
     SDL_INIT_EVERYTHING,
     SDL_Init,
+    SDL_LockSurface,
+    SDL_MUSTLOCK,
     SDL_PixelFormat,
     SDL_Quit,
     SDL_Rect,
@@ -26,6 +28,7 @@ from .SDL2 cimport (
     SDL_SetRenderDrawColor,
     SDL_SetTextureBlendMode,
     SDL_Surface,
+    SDL_UnlockSurface,
     SDL_Window,
     Uint32,
     Uint8,
@@ -160,6 +163,21 @@ cdef class Renderer:
             res.ptr = ptr
             return res
 
+
+cdef class SurfaceLock:
+    def __init__(self, Surface surface):
+        self.surface = surface
+
+    def __enter__(self):
+        if SDL_MUSTLOCK(self.surface.ptr):
+            SDL_LockSurface(self.surface.ptr)
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if SDL_MUSTLOCK(self.surface.ptr):
+            SDL_UnlockSurface(self.surface.ptr)
+
+
 cdef class Surface:
     def __dealloc__(self):
         log_info("Freeing Surface[%p]", self.ptr)
@@ -179,6 +197,9 @@ cdef class Surface:
             log_sdl_err("Failed to optimize Surface[%p]", self.ptr)
         log_info("Optimized Surface[%p] -> Surface[%p]", self.ptr, optimized)
         return Surface.wrap(optimized)
+
+    cdef SurfaceLock lock(self):
+        return SurfaceLock(self)
 
     @staticmethod
     cdef Surface wrap(SDL_Surface* ptr):
