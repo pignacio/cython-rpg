@@ -2,3 +2,4 @@ rpg/.*\.c
 rpg/.*\.so
 rpg/.*\.html
 build/.*
+.git/.*
