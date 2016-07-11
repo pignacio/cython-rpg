@@ -54,10 +54,13 @@ cdef class Surface:
     cdef SDL_Surface* ptr
     cdef Surface optimized_for(self, SDL_PixelFormat* format)
     cdef SurfaceLock lock(self)
+
     @staticmethod
     cdef Surface wrap(SDL_Surface* ptr)
     @staticmethod
     cdef Surface load(const char* path, SDL_PixelFormat* format=*)
+    @staticmethod
+    cdef Surface create(int width, int height, int depth=*)
 
 
 cdef class Texture:

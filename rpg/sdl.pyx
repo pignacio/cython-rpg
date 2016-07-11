@@ -4,6 +4,7 @@ from .SDL2 cimport (
     SDL_BlendMode,
     SDL_Color,
     SDL_ConvertSurface,
+    SDL_CreateRGBSurface,
     SDL_CreateRenderer,
     SDL_CreateTextureFromSurface,
     SDL_CreateWindow,
@@ -219,6 +220,19 @@ cdef class Surface:
         if format:
             res = res.optimized_for(format)
         return res
+
+    @staticmethod
+    cdef Surface create(int width, int height, int depth=32):
+        assert width > 0
+        assert height > 0
+        log_info("Creating a RGB Surface %dx%d. Depth=%d", width, height, depth)
+        cdef SDL_Surface* ptr = SDL_CreateRGBSurface(0, width, height, depth, 0, 0, 0, 0)
+        if not ptr:
+            log_sdl_err("Something went wrong creating the RGB Surface")
+            return None
+        else:
+            return Surface.wrap(ptr)
+
 
 
 cdef class Texture:
