@@ -4,6 +4,7 @@ from .SDL2 cimport (
     SDL_BlendMode,
     SDL_Color,
     SDL_ConvertSurface,
+    SDL_CreateRGBSurface,
     SDL_CreateRenderer,
     SDL_CreateTextureFromSurface,
     SDL_CreateWindow,
@@ -16,6 +17,8 @@ from .SDL2 cimport (
     SDL_GetWindowSurface,
     SDL_INIT_EVERYTHING,
     SDL_Init,
+    SDL_LockSurface,
+    SDL_MUSTLOCK,
     SDL_PixelFormat,
     SDL_Quit,
     SDL_Rect,
@@ -25,7 +28,10 @@ from .SDL2 cimport (
     SDL_RenderPresent,
     SDL_SetRenderDrawColor,
     SDL_SetTextureBlendMode,
+    SDL_SetTextureColorMod,
+    SDL_SetTextureAlphaMod,
     SDL_Surface,
+    SDL_UnlockSurface,
     SDL_Window,
     Uint32,
     Uint8,
@@ -160,6 +166,21 @@ cdef class Renderer:
             res.ptr = ptr
             return res
 
+
+cdef class SurfaceLock:
+    def __init__(self, Surface surface):
+        self.surface = surface
+
+    def __enter__(self):
+        if SDL_MUSTLOCK(self.surface.ptr):
+            SDL_LockSurface(self.surface.ptr)
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if SDL_MUSTLOCK(self.surface.ptr):
+            SDL_UnlockSurface(self.surface.ptr)
+
+
 cdef class Surface:
     def __dealloc__(self):
         log_info("Freeing Surface[%p]", self.ptr)
@@ -180,6 +201,9 @@ cdef class Surface:
         log_info("Optimized Surface[%p] -> Surface[%p]", self.ptr, optimized)
         return Surface.wrap(optimized)
 
+    cdef SurfaceLock lock(self):
+        return SurfaceLock(self)
+
     @staticmethod
     cdef Surface wrap(SDL_Surface* ptr):
         log_info("Wrapping Surface[%p]", ptr)
@@ -199,6 +223,19 @@ cdef class Surface:
             res = res.optimized_for(format)
         return res
 
+    @staticmethod
+    cdef Surface create(int width, int height, int depth=32):
+        assert width > 0
+        assert height > 0
+        log_info("Creating a RGB Surface %dx%d. Depth=%d", width, height, depth)
+        cdef SDL_Surface* ptr = SDL_CreateRGBSurface(0, width, height, depth, 0, 0, 0, 0)
+        if not ptr:
+            log_sdl_err("Something went wrong creating the RGB Surface")
+            return None
+        else:
+            return Surface.wrap(ptr)
+
+
 
 cdef class Texture:
     def __dealloc__(self):
@@ -214,6 +251,18 @@ cdef class Texture:
         res = SDL_SetTextureBlendMode(self.ptr, mode)
         if res < 0:
             log_sdl_warn("Could not set blend mode for Texture[%p]", self.ptr)
+        return res
+
+    cdef int set_color_mod(self, Uint8 r, Uint8 g, Uint8 b):
+        res = SDL_SetTextureColorMod(self.ptr, r, g, b)
+        if res < 0:
+            log_sdl_warn("Could not set color mod for Texture[%p]", self.ptr)
+        return res
+
+    cdef int set_alpha_mod(self, Uint8 a):
+        res = SDL_SetTextureAlphaMod(self.ptr, a)
+        if res < 0:
+            log_sdl_warn("Could not set alpha mod for Texture[%p]", self.ptr)
         return res
 
     @staticmethod

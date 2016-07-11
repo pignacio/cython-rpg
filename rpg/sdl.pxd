@@ -46,13 +46,21 @@ cdef class Renderer:
     cdef Renderer create(SDL_Window* window, Uint32 flags)
 
 
+cdef class SurfaceLock:
+    cdef Surface surface
+
+
 cdef class Surface:
     cdef SDL_Surface* ptr
     cdef Surface optimized_for(self, SDL_PixelFormat* format)
+    cdef SurfaceLock lock(self)
+
     @staticmethod
     cdef Surface wrap(SDL_Surface* ptr)
     @staticmethod
     cdef Surface load(const char* path, SDL_PixelFormat* format=*)
+    @staticmethod
+    cdef Surface create(int width, int height, int depth=*)
 
 
 cdef class Texture:
@@ -61,6 +69,8 @@ cdef class Texture:
     cdef int height
 
     cdef int set_blend_mode(self, SDL_BlendMode mode)
+    cdef int set_color_mod(self, Uint8 r, Uint8 g, Uint8 b)
+    cdef int set_alpha_mod(self, Uint8 a)
     @staticmethod
     cdef Texture wrap(SDL_Texture* ptr, int width, int height)
 
