@@ -2,11 +2,13 @@
 from cpython cimport array
 import array
 
+from rpg cimport debug
 from rpg.SDL2 cimport (
     SDL_SCANCODE_DOWN,
     SDL_SCANCODE_LEFT,
     SDL_SCANCODE_RIGHT,
     SDL_SCANCODE_UP,
+    SDL_Color,
 )
 from rpg.gfx.blitter cimport Blitter, TextureRect
 from rpg.image.sprite_sheet cimport SpriteSheet
@@ -72,7 +74,7 @@ cdef class Map:
         cdef int draw_y_end = min(draw_y_start + self.draw_height / tilesize, self.height)
         cdef int current_x, current_y, current_z
         cdef TextureRect actor_image
-        cdef int size = 4
+        cdef int size = 6
         cdef SDL_Rect actor_actionpoint
 
         for current_x in range(draw_x_start, draw_x_end):
@@ -99,7 +101,7 @@ cdef class Map:
             <int>self.main_actor.position.y + self.main_actor.last_direction.y * 24 - size/2,
             size,
             size)
-        blitter.fill_rect(&actor_actionpoint, 255, 0, 0)
+        debug.debug_rect(actor_actionpoint, SDL_Color(255, 0, 0, 150))
 
     cdef process(self, int ticks, KeyboardState keyboard_state):
         cdef IntPoint direction = IntPoint(0, 0)
