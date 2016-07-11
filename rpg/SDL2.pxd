@@ -224,6 +224,7 @@ cdef extern from "SDL2/SDL_surface.h" nogil:
     SDL_Surface* SDL_CreateRGBSurfaceFrom(void* pixels, int width, int height, int depth, int pitch, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask)
     void SDL_FreeSurface(SDL_Surface* surface)
     int SDL_SetSurfacePalette(SDL_Surface* surface, SDL_Palette* palette)
+    int SDL_MUSTLOCK(SDL_Surface* surface)
     int SDL_LockSurface(SDL_Surface* surface)
     void SDL_UnlockSurface(SDL_Surface* surface)
     SDL_Surface* SDL_LoadBMP_RW(SDL_RWops* src, int freesrc)
