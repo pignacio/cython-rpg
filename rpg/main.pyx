@@ -97,19 +97,19 @@ cdef run2(SDL sdl):
     debug.get_instance().renderer = renderer
     blitter = BasicBlitter(renderer)
     start = last_tick = SDL_GetTicks()
-    image = Surface.load('character.png')
+    image = Surface.load('res/img/character.png')
     texture = renderer.texture_from_surface(image)
     sheet = SpriteSheet(texture, 32, 48)
     log_info("Sheet is %d x %d", sheet._width(), sheet._height())
 
-    map_texture = renderer.texture_from_surface(Surface.load('tileset3.png'))
+    map_texture = renderer.texture_from_surface(Surface.load('res/img/tileset3.png'))
     tilesize = 32
     map_data = [[[x + y, 10 + x + y] for y in xrange(10)] for x in xrange(10)]
     tileset = Tileset(map_texture, tilesize)
     map = Map(tileset, 10, 10, 800, 600, map_data)
     map.main_actor = Actor(sheet.get_tile_by_id(0), Point(100, 100), SDL_Rect(-10, -10, 20, 20))
 
-    font = Font.open("data-latin.ttf", 30)
+    font = Font.open("res/fonts/data-latin.ttf", 30)
     text = font.render_text_solid("Testing SDL_ttf!", SDL_Color(255, 255, 255, 255))
     text_texture = renderer.texture_from_surface(text)
     text_rect = TextureRect(text_texture.ptr, SDL_Rect(0, 0, text.ptr.w, text.ptr.h))
